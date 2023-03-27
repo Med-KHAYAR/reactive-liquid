@@ -1,0 +1,9 @@
+{
+	"scopeName": "source.reactive-liquid",
+	"patterns": [{ "include": "#expression" }],
+	"repository": {
+	  "expression": {
+		"patterns": [ { "include": "source.typescript-react"}]
+	  }
+	}
+  }
