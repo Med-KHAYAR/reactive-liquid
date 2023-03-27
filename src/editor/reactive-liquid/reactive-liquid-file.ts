@@ -62,7 +62,7 @@ export function isInsideStyleRegion(
                 if(offset>=node["openingElement"].end && offset<= node["closingElement"].pos){
            
                     if(node["children"].length!=0){
-                        var tsInStyle = content.matchAll(/<%((?!%>).)*%>/gm);
+                        var tsInStyle = content.matchAll(/<%((?!%>)(.|\s))*%>/gm);
                         Array.from(tsInStyle).map(ts=>{
                             if(offset>= ts.index!+1 && offset<=  ts.index!+ts[0].length-1){
                                 inStyleTs= true;
@@ -111,7 +111,7 @@ export function getCssDocument(
                     var start=node["children"][0].pos;
                     var end = node["children"][node["children"].length-1].end;
                     var styleSource=documentText.slice(start,end)
-                    var tsInStyle = styleSource.matchAll(/<%((?!%>).)*%>/gm);
+                    var tsInStyle = styleSource.matchAll(/<%((?!%>)(.|\s))*%>/gm);
                         Array.from(tsInStyle).map(ts=>{
                             styleSource=styleSource.slice(0,ts.index!)+ (' '.repeat(ts[0].length))+ styleSource.slice(ts.index!+ts[0].length);
                         })
@@ -156,7 +156,7 @@ export function getTypescriptDocument(
          
                 //\$\{(\{([^{}]|(?1))*\})\}   // may work
                 cssSource=cssSource.replaceAll(/{/gm,'↑').replaceAll(/}/gm,'↓')
-                var tsInStyle = cssSource.matchAll(/<%((?!%>).)*%>/gm);
+                var tsInStyle = cssSource.matchAll(/<%((?!%>)(.|\s))*%>/gm);
                 Array.from(tsInStyle).map(ts=>{
                     var inStyleScript = ts[0].replaceAll('<%', '{ ').replaceAll('%>', ' }').replaceAll('↑','{').replaceAll('↓','}');
                     cssSource=cssSource.slice(0,ts.index!)+ inStyleScript + cssSource.slice(ts.index!+ts[0].length)
