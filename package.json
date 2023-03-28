@@ -23,7 +23,7 @@
     "csstype": "^3.1.1",
     "husky": "^8.0.3",
     "raw-loader": "^4.0.2",
-    "reactive-liquid-monaco-editor": "^0.0.4",
+    "reactive-liquid-monaco-editor": "^0.0.13",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0"
   }

@@ -112,7 +112,7 @@ export function getCssDocument(
                     var styleSource=documentText.slice(start,end)
                     var tsInStyle = styleSource.matchAll(/<%((?!%>)(.|\s))*%>/gm);
                         Array.from(tsInStyle).map(ts=>{
-                            styleSource=styleSource.slice(0,ts.index!)+ (' '.repeat(ts[0].length))+ styleSource.slice(ts.index!+ts[0].length);
+                            styleSource=styleSource.slice(0,ts.index!)+ '@__;'+(' '.repeat(ts[0].length-4))+ styleSource.slice(ts.index!+ts[0].length);
                         })
                     content = content.slice(0, start) + styleSource + content.slice(end);
                     
