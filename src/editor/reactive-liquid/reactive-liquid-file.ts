@@ -19,16 +19,15 @@ export async function createFile(path:string,filename:string):Promise<ReactiveLi
 
     file.reactiveLiquid['ReactiveFile']=file;
     
-    file.reactiveLiquid.onDidChangeContent((e)=>{
+    file.reactiveLiquid.onDidChangeContent(async (e)=>{
         file.typescript.setValue(getTypescriptDocument(file.reactiveLiquid.getValue()));
         file.css.setValue(getCssDocument(file.reactiveLiquid.getValue()));
-
         // Diagnostics managements
-        workersAndProviders.typescript.getDiagnostics(file.typescript).then((tsMarkers)=>{
-            workersAndProviders.css.getDiagnostics(file.css).then((cssMarkers)=>{
-                monaco.editor.setModelMarkers(file.reactiveLiquid,'',[...tsMarkers,...cssMarkers]);
-            })
-        })
+        const promises:any[] = [];
+        const tsMarkers=await workersAndProviders.typescript.getDiagnostics(file.typescript);
+        const cssMarkers=await workersAndProviders.css.getDiagnostics(file.css);
+        monaco.editor.setModelMarkers(file.reactiveLiquid,'reactive-liquid',[...tsMarkers,...cssMarkers]);
+            
     })
 
     return file;

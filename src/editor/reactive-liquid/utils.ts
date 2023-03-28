@@ -9,15 +9,18 @@ export async function initWorkersAndProviders(
     cssDefaults=monaco.languages.css.cssDefaults
     )
     {
-    const ts  = await getTypescriptWorkerAndProviders(typescriptDefaults);
-    const css = await getCssWorkerAndProviders(cssDefaults);
-
-    ts.worker=await ts.worker();
-    css.worker=await css.worker();
-    console.log("TS",ts)
 
     if(!workersAndProviders){
-        workersAndProviders={
+        
+        const ts  = await getTypescriptWorkerAndProviders(typescriptDefaults);
+        const css = await getCssWorkerAndProviders(cssDefaults);
+
+        ts.worker   = await ts.worker();
+        css.worker  = await css.worker();
+
+
+        workersAndProviders = {
+
             typescript  : { 
                 worker          : ts.worker,
                 providers       : ts.providers,
@@ -45,9 +48,13 @@ export async function initWorkersAndProviders(
                 providers       : css.providers,
                 getDiagnostics  : async (model) => {
                     const diagnostics = await css.worker.doValidation(model.uri.toString())
+                    if (!diagnostics || model.isDisposed()) {
+                        return;
+                    }
                     return diagnostics.map( d => toDiagnostics(model,d) );
                 }
-            },
+            }
+
         }
     }
     return workersAndProviders;

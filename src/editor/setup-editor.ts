@@ -108,7 +108,6 @@ async function _loadTypes(packages){
       
           await Promise.resolve(loadTypes(packageName)).then(contents => {
             const indexPath = `${typesPrefix}/${typesPackageName}/index`;
-            //console.log(contents)
             // This makes TS automatically find typings for package-level imports
             monaco.languages.typescript.typescriptDefaults.addExtraLib(contents);//, `${indexPath}.d.ts`);
             // But for deeper path imports, we likely need to map them back to the root index file
@@ -119,7 +118,6 @@ async function _loadTypes(packages){
           })
         
         }
-        console.log( monaco.languages.typescript.typescriptDefaults.getExtraLibs())
     
         monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
           ...monaco.languages.typescript.typescriptDefaults.getCompilerOptions(),

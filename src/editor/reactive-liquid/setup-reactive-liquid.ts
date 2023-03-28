@@ -35,13 +35,12 @@ export async function setupReactiveLiquid(){
 
     monaco.languages.registerCompletionItemProvider('reactive-liquid',{
       provideCompletionItems:async (model,position)=>{
-        let file = model['ReactiveFile'];
-        if(isInsideStyleRegion(model.getValue(),model.getOffsetAt(position))){
-            return workersAndProviders.css.providers.CompletionAdapter.provideCompletionItems(file.css,position)
-        }else{
-            return workersAndProviders.typescript.providers.SuggestAdapter.provideCompletionItems(file.typescript,position)
-        }
-        return null;
+          let file = model['ReactiveFile'];
+          if(isInsideStyleRegion(model.getValue(),model.getOffsetAt(position))){
+              return workersAndProviders.css.providers.CompletionAdapter.provideCompletionItems(file.css,position)
+          }else{
+              return workersAndProviders.typescript.providers.SuggestAdapter.provideCompletionItems(file.typescript,position)
+          }
         }
       })
 
