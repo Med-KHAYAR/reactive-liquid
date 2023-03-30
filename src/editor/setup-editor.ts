@@ -21,7 +21,8 @@ export async function initialEditorSetup(){
         { packageName: 'csstype', loadTypes },
         { packageName: 'prop-types', loadTypes },
         { packageName: 'react', loadTypes },
-        { packageName: 'react-dom',loadTypes }
+        { packageName: 'react-dom',loadTypes },
+        { packageName: 'shopify',loadTypes }
     );
     
     // load Types Definitions ()

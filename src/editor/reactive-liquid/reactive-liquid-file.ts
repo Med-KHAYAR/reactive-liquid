@@ -20,6 +20,7 @@ export async function createFile(path:string,filename:string):Promise<ReactiveLi
     file.reactiveLiquid['ReactiveFile']=file;
     
     file.reactiveLiquid.onDidChangeContent(async (e)=>{
+        console.log(getFinalTypescriptDocument(file.reactiveLiquid.getValue()))
         file.typescript.setValue(getTypescriptDocument(file.reactiveLiquid.getValue()));
         file.css.setValue(getCssDocument(file.reactiveLiquid.getValue()));
         // Diagnostics managements
@@ -85,7 +86,7 @@ export function isInsideStyleRegion(
 export function getCssDocument(
 	documentText: string,
 ) {
-    var virtualFileName="_cssDocument.ts";
+    var virtualFileName="_cssDocument.tsx";
 	const node=ts.createSourceFile(virtualFileName,documentText, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)
    
     let content = documentText
@@ -128,7 +129,7 @@ export function getCssDocument(
 export function getTypescriptDocument(
 	documentText: string,
 ) {
-    var virtualFileName="_typescriptDocument.ts";
+    var virtualFileName="_typescriptDocument.tsx";
 	const node=ts.createSourceFile(virtualFileName,documentText, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)
     
     let content =  documentText;
@@ -161,6 +162,54 @@ export function getTypescriptDocument(
                     cssSource=cssSource.slice(0,ts.index!)+ inStyleScript + cssSource.slice(ts.index!+ts[0].length)
                 })
                 cssSource=cssSource.replaceAll('↑',' ').replaceAll('↓',' ');
+                content=content.slice(0,node["openingElement"].end)+cssSource+content.slice(node["closingElement"].pos);
+                
+               
+            }
+        }
+
+        return ts.forEachChild(node, find);
+        
+    }
+}
+
+
+export function getFinalTypescriptDocument(
+	documentText: string,
+) {
+    var virtualFileName="_finalTypescriptDocument.tsx";
+	const node=ts.createSourceFile(virtualFileName,documentText, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)
+    
+    let content =  documentText;
+    let spaces= documentText
+    .split('\n')
+    .map(line => {
+        return ' '.repeat(line.length);
+    }).join('\n');
+        
+    let res=find(node)
+    return content.replaceAll('↑','&#123;').replaceAll('↓','&#125;');
+
+    function find(node: ts.Node | undefined): boolean | undefined {
+        if (!node) {
+            return false;
+        }
+        // Is this a JsxElement with an identifier name?
+        if(node.kind==ts.SyntaxKind.JsxElement){
+            
+            if(node["openingElement"]['tagName'].escapedText=='style'){
+                
+                var originalCssSource=documentText.slice(node["openingElement"].end,node["closingElement"].pos);
+                var cssSource= originalCssSource;//.replaceAll(/{/g,"[OPEN]").replaceAll(/}/g,"[CLOSE]");
+         
+                //\$\{(\{([^{}]|(?1))*\})\}   // may work
+                cssSource=cssSource.replaceAll(/{/gm,'↑').replaceAll(/}/gm,'↓')
+                var tsInStyle = cssSource.matchAll(/<%((?!%>)(.|\s))*%>/gm);
+                Array.from(tsInStyle).map(ts=>{
+                    var inStyleScript = ts[0].replaceAll('<%', '{ ').replaceAll('%>', ' }').replaceAll('↑','{').replaceAll('↓','}');
+                    cssSource=cssSource.slice(0,ts.index!)+ inStyleScript + cssSource.slice(ts.index!+ts[0].length)
+                })
+                //cssSource=cssSource.replaceAll('↑',' ').replaceAll('↓',' ');
                 content=content.slice(0,node["openingElement"].end)+cssSource+content.slice(node["closingElement"].pos);
                 
                
